@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.system_generated/
+scratch/
+.DS_Store

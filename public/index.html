@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student API Manager & HTTP Request Analyzer</title>
+  <meta name="description" content="Interactive Student API Manager to test and demonstrate GET, POST, PUT, DELETE HTTP methods, headers, payload, and status codes in browser DevTools.">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Top Navigation / Brand Bar -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Student API Manager</h1>
+          <p class="brand-sub">HTTP Methods Testing & DevTools Network Inspector</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <div class="server-badge" id="serverHealthBadge">
+          <span class="status-pulse"></span>
+          <span id="serverStatusText">Checking Server...</span>
+        </div>
+        <button id="quickHelpBtn" class="pill-btn" title="View Teacher DevTools Demo Guide">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          DevTools Guide
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Layout: 2-column or centered card -->
+    <main class="main-content">
+      
+      <!-- Center Main Card: Student API Manager matching the user diagram -->
+      <div class="api-console-card">
+        <div class="console-header">
+          <div class="console-title-wrap">
+            <span class="terminal-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </span>
+            <span class="console-title">STUDENT API MANAGER</span>
+          </div>
+          <span class="endpoint-hint" id="currentEndpointPreview">Target: <code>http://localhost:8000/api/students/1</code></span>
+        </div>
+
+        <div class="console-body">
+          <!-- Input Form Section -->
+          <div class="form-section">
+            <div class="field-row id-row">
+              <label for="studentId">
+                <span class="label-name">Student ID</span>
+                <span class="label-hint">(Used for GET, PUT, DELETE)</span>
+              </label>
+              <div class="id-input-group">
+                <input type="number" id="studentId" value="1" min="1" placeholder="e.g. 1">
+                <button type="button" class="mini-btn" id="nextIdBtn" title="Set to Next available ID">+ New ID</button>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <div class="field-group">
+                <label for="studentName">
+                  <span class="label-name">Name</span>
+                  <span class="label-req">*</span>
+                </label>
+                <input type="text" id="studentName" value="Amit Sahu" placeholder="e.g. Amit Sahu" autocomplete="off">
+              </div>
+
+              <div class="field-group">
+                <label for="studentRoll">
+                  <span class="label-name">Roll No</span>
+                  <span class="label-req">*</span>
+                </label>
+                <input type="text" id="studentRoll" value="27" placeholder="e.g. 27" autocomplete="off">
+              </div>
+
+              <div class="field-group">
+                <label for="studentCourse">
+                  <span class="label-name">Course</span>
+                  <span class="label-req">*</span>
+                </label>
+                <input type="text" id="studentCourse" value="B.Tech" placeholder="e.g. B.Tech" autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Primary HTTP Method Buttons -->
+            <div class="actions-toolbar">
+              <div class="primary-http-buttons">
+                <button id="btnGet" class="http-btn btn-get" title="Fetch student data by ID (GET)">
+                  <span class="btn-method">GET</span>
+                  <span class="btn-label">Fetch ID</span>
+                </button>
+                <button id="btnPost" class="http-btn btn-post" title="Add new student record (POST)">
+                  <span class="btn-method">POST</span>
+                  <span class="btn-label">Create</span>
+                </button>
+                <button id="btnPut" class="http-btn btn-put" title="Update existing student by ID (PUT)">
+                  <span class="btn-method">PUT</span>
+                  <span class="btn-label">Update</span>
+                </button>
+                <button id="btnDelete" class="http-btn btn-delete" title="Delete student by ID (DELETE)">
+                  <span class="btn-method">DELETE</span>
+                  <span class="btn-label">Delete</span>
+                </button>
+              </div>
+
+              <div class="secondary-actions">
+                <button id="btnGetAll" class="tool-btn" title="Fetch all student records (GET /api/students)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                  GET All (List)
+                </button>
+                <button id="btnTest404" class="tool-btn warning-tool" title="Trigger intentional 404 Not Found error">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                  Test 404 (Wrong URL)
+                </button>
+                <button id="btnClearForm" class="tool-btn" title="Clear inputs">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                  Reset Form
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="console-divider">
+            <span>RESPONSE INSPECTOR</span>
+          </div>
+
+          <!-- Response Section matching the diagram -->
+          <div class="response-section">
+            <div class="response-meta-bar">
+              <div class="meta-left">
+                <span class="meta-label">Status:</span>
+                <span id="responseStatusBadge" class="status-pill status-ready">Ready (No Request Yet)</span>
+                <span id="responseMethodPill" class="method-pill" style="display:none;">GET</span>
+              </div>
+              <div class="meta-right">
+                <span id="responseTimeBadge" class="time-badge" style="display:none;">0 ms</span>
+                <button id="copyJsonBtn" class="mini-btn copy-btn" title="Copy response JSON">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab Switcher for Deep Inspection -->
+            <div class="inspector-tabs">
+              <button class="tab-btn active" data-tab="tab-body">Response Body</button>
+              <button class="tab-btn" data-tab="tab-payload">Sent Payload</button>
+              <button class="tab-btn" data-tab="tab-headers">Headers & URL</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content active" id="tab-body">
+              <pre id="responseJsonDisplay" class="code-box"><code>{
+  "message": "Click any HTTP button above (GET, POST, PUT, DELETE) to send a request."
+}</code></pre>
+            </div>
+
+            <div class="tab-content" id="tab-payload">
+              <pre id="requestPayloadDisplay" class="code-box"><code>// No request payload sent yet. (POST and PUT requests send JSON payloads here)</code></pre>
+            </div>
+
+            <div class="tab-content" id="tab-headers">
+              <div class="headers-grid">
+                <div>
+                  <h4 class="sub-heading">Request Information</h4>
+                  <pre id="requestHeadersDisplay" class="code-box mini-box"><code>// Ready</code></pre>
+                </div>
+                <div>
+                  <h4 class="sub-heading">Response Headers</h4>
+                  <pre id="responseHeadersDisplay" class="code-box mini-box"><code>// Ready</code></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Database Records Section -->
+      <section class="live-data-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+            </svg>
+            <h3>Live Student Records (Server Database)</h3>
+          </div>
+          <button id="refreshTableBtn" class="refresh-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            Refresh List
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="students-table" id="studentsTable">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Student Name</th>
+                <th>Roll Number</th>
+                <th>Course</th>
+                <th>Quick Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studentsTableBody">
+              <!-- Dynamically populated -->
+              <tr>
+                <td colspan="5" class="loading-td">Loading student data from server...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-hint">💡 <strong>Tip:</strong> Click <strong>"Select"</strong> on any student row above to auto-fill the form and test <code>GET</code>, <code>PUT</code>, or <code>DELETE</code> immediately!</p>
+      </section>
+
+      <!-- DevTools Presentation Guide Modal / Card -->
+      <section class="guide-section" id="guideSection">
+        <div class="guide-card">
+          <div class="guide-header">
+            <div class="guide-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              Teacher Practical Demonstration Guide (F12 DevTools)
+            </div>
+            <span class="guide-tag">For College / Viva Analysis</span>
+          </div>
+
+          <div class="guide-grid">
+            <div class="guide-step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h4>Open Developer Tools</h4>
+                <p>Press <kbd>F12</kbd> (or <kbd>Ctrl + Shift + I</kbd>) in Chrome/Edge, then click on the <strong>Network</strong> tab.</p>
+              </div>
+            </div>
+
+            <div class="guide-step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h4>Trigger HTTP Methods</h4>
+                <p>Click <strong>[ GET ]</strong>, <strong>[ POST ]</strong>, <strong>[ PUT ]</strong>, or <strong>[ DELETE ]</strong>. Watch the request appear in real-time in the Network list.</p>
+              </div>
+            </div>
+
+            <div class="guide-step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h4>Inspect Headers & Status</h4>
+                <p>Click any request in Network to show the teacher:</p>
+                <ul>
+                  <li><strong>Status Code:</strong> <code>200 OK</code> / <code>201 Created</code> / <code>404 Not Found</code></li>
+                  <li><strong>Headers:</strong> <code>Content-Type: application/json</code></li>
+                  <li><strong>Payload:</strong> The JSON sent in request body</li>
+                  <li><strong>Response:</strong> The JSON returned by Python server</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="guide-step">
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <h4>Demonstrate 404 Not Found</h4>
+                <p>Click <strong>"Test 404 (Wrong URL)"</strong> or request a non-existing Student ID to show <code>404 Not Found</code> handling.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <p>Student HTTP Web App — Built with Python Standard Library & Vanilla Web Stack</p>
+      <p class="server-url-foot">Server Address: <code>http://127.0.0.1:8000</code></p>
+    </footer>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
